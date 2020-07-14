@@ -1,5 +1,47 @@
 = Cheatsheets
 
+[[AccessControlEntry]]
+== AccessControlEntry
+
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[host]]`@host`|`String`|+++
+Set the value for host
++++
+|[[operation]]`@operation`|`link:enums.html#AclOperation[AclOperation]`|+++
+Set the value for operation
++++
+|[[permissionType]]`@permissionType`|`link:enums.html#AclPermissionType[AclPermissionType]`|+++
+Set the value for permissionType
++++
+|[[principal]]`@principal`|`String`|+++
+Set the value for principal
++++
+|===
+
+[[AclBinding]]
+== AclBinding
+
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|===
+
+[[AclBindingFilter]]
+== AclBindingFilter
+
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|===
+
 [[ClusterDescription]]
 == ClusterDescription
 
@@ -352,6 +394,25 @@ Set the timestamp of the record in the topic/partition
 +++
 |[[topic]]`@topic`|`String`|+++
 Set the topic the record was appended to
++++
+|===
+
+[[ResourcePattern]]
+== ResourcePattern
+
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|[[name]]`@name`|`String`|+++
+Set the resource name
++++
+|[[patternType]]`@patternType`|`link:enums.html#PatternType[PatternType]`|+++
+Set the resource pattern type
++++
+|[[resourceType]]`@resourceType`|`link:enums.html#ResourceType[ResourceType]`|+++
+Set the specific resource type
 +++
 |===
 

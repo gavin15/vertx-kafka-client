@@ -36,6 +36,9 @@ import java.util.Properties;
 import java.util.Set;
 import org.apache.kafka.clients.admin.AdminClient;
 
+import org.apache.kafka.clients.admin.CreateAclsResult;
+import org.apache.kafka.clients.admin.DescribeAclsResult;
+
 /**
  * Vert.x Kafka Admin client implementation
  */
@@ -257,6 +260,45 @@ public interface KafkaAdminClient {
    * Like {@link #deleteConsumerGroupOffsets(String, Set, Handler)} but returns a {@code Future} of the asynchronous result
    */
   Future<Void> deleteConsumerGroupOffsets(String groupId, Set<TopicPartition> partitions);
+
+  /**
+   * Lists Access Controlled Lists (ACLs) based on supplied filter.
+   *
+   * @param filter AclBinding filter
+   * @param completionHandler handler called on operation completed
+   */
+  void describeAcls(AclBindingFilter filter, Handler<AsyncResult<List<AclBinding>>> completionHandler);
+
+  /**
+   * Like {@link #describeAcls(AclBindingFilter, Handler)} but returns a {@code Future} of the asynchronous result
+   */
+  Future<List<AclBinding>> describeAcls(AclBindingFilter filter);
+
+  /**
+   * Create Access Controlled Lists (ACLs) bound to resources.
+   *
+   * @param acls List of ACLs to be created
+   * @param completionHandler handler called on operation completed
+   */
+  void createAcls(List<AclBinding> acls, Handler<AsyncResult<Void>> completionHandler);
+
+  /**
+   * Like {@link #createAcls(List, Handler)} but returns a {@code Future} of the asynchronous result
+   */
+  Future<Void> createAcls(List<AclBinding> acls);
+
+  /**
+   * Delete Access Controlled Lists (ACLs) based on supplied filter.
+   *
+   * @param filters filter to delete
+   * @param completionHandler handler called on operation completed
+   */
+  void deleteAcls(List<AclBindingFilter> filters, Handler<AsyncResult<Void>> completionHandler);
+
+  /**
+   * Like {@link #deleteAcls(List, Handler)} but returns a {@code Future} of the asynchronous result
+   */
+  Future<Void> deleteAcls(List<AclBindingFilter> filters);
 
   /**
    * Close the admin client

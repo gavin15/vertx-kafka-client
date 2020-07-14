@@ -17,12 +17,16 @@
 package io.vertx.kafka.client.common.impl;
 
 import io.vertx.core.Handler;
+import io.vertx.kafka.admin.AccessControlEntry;
+import io.vertx.kafka.admin.AclBinding;
+import io.vertx.kafka.admin.AclBindingFilter;
 import io.vertx.kafka.admin.Config;
 import io.vertx.kafka.admin.ConfigEntry;
 import io.vertx.kafka.admin.ConsumerGroupListing;
 import io.vertx.kafka.admin.ListConsumerGroupOffsetsOptions;
 import io.vertx.kafka.admin.MemberAssignment;
 import io.vertx.kafka.admin.NewTopic;
+import io.vertx.kafka.admin.ResourcePattern;
 import io.vertx.kafka.client.common.ConfigResource;
 import io.vertx.kafka.client.common.Node;
 import io.vertx.kafka.client.consumer.OffsetAndTimestamp;
@@ -222,5 +226,45 @@ public class Helper {
 
   public static Set<org.apache.kafka.common.TopicPartition> toTopicPartitionSet(Set<TopicPartition> partitions) {
     return partitions.stream().map(Helper::to).collect(Collectors.toSet());
+  }
+
+  public static org.apache.kafka.common.acl.AclBindingFilter to(AclBindingFilter aclBindingFilter) {
+    return new org.apache.kafka.common.acl.AclBindingFilter(aclBindingFilter.getPatternFilter(), aclBindingFilter.getEntryFilter());
+  }
+
+  public static AclBindingFilter from(org.apache.kafka.common.acl.AclBindingFilter aclBindingFilter) {
+    return new AclBindingFilter(aclBindingFilter.patternFilter(), aclBindingFilter.entryFilter());
+  }
+
+  public static org.apache.kafka.common.acl.AclBinding to(AclBinding aclBinding) {
+    return new org.apache.kafka.common.acl.AclBinding(Helper.to(aclBinding.getPattern()), Helper.to(aclBinding.getEntry()));
+  }
+
+  public static AclBinding from(org.apache.kafka.common.acl.AclBinding aclBinding) {
+    return new AclBinding(Helper.from(aclBinding.pattern()), Helper.from(aclBinding.entry()));
+  }
+
+  public static org.apache.kafka.common.resource.ResourcePattern to(ResourcePattern resourcePattern) {
+    return new org.apache.kafka.common.resource.ResourcePattern(resourcePattern.getResourceType(), resourcePattern.getName(), resourcePattern.getPatternType());
+  }
+
+  public static ResourcePattern from(org.apache.kafka.common.resource.ResourcePattern resourcePattern) {
+    return new ResourcePattern(resourcePattern.resourceType(), resourcePattern.name(), resourcePattern.patternType());
+  }
+
+  public static org.apache.kafka.common.acl.AccessControlEntry to(AccessControlEntry accessControlEntry) {
+    return new org.apache.kafka.common.acl.AccessControlEntry(accessControlEntry.getPrincipal(), accessControlEntry.getHost(), accessControlEntry.getOperation(), accessControlEntry.getPermissionType());
+  }
+
+  public static AccessControlEntry from(org.apache.kafka.common.acl.AccessControlEntry accessControlEntry) {
+    return new AccessControlEntry(accessControlEntry.principal(), accessControlEntry.host(), accessControlEntry.operation(), accessControlEntry.permissionType());
+  }
+
+  public static Collection<org.apache.kafka.common.acl.AclBinding> toAclBindingList(List<AclBinding> aclBindings) {
+    return aclBindings.stream().map(Helper::to).collect(Collectors.toList());
+  }
+
+  public static Collection<org.apache.kafka.common.acl.AclBindingFilter> toAclBindingFilterList(List<AclBindingFilter> aclBindingFilters) {
+    return aclBindingFilters.stream().map(Helper::to).collect(Collectors.toList());
   }
 }
