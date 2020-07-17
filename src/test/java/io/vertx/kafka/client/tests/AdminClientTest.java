@@ -16,6 +16,9 @@
 
 package io.vertx.kafka.client.tests;
 
+import io.vertx.kafka.admin.AccessControlEntry;
+import io.vertx.kafka.admin.AclBinding;
+import io.vertx.kafka.admin.AclBindingFilter;
 import io.vertx.kafka.admin.ConsumerGroupListing;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,6 +45,7 @@ import io.vertx.kafka.admin.ConsumerGroupDescription;
 import io.vertx.kafka.admin.MemberAssignment;
 import io.vertx.kafka.admin.MemberDescription;
 import io.vertx.kafka.admin.NewTopic;
+import io.vertx.kafka.admin.ResourcePattern;
 import io.vertx.kafka.admin.TopicDescription;
 import io.vertx.kafka.client.common.ConfigResource;
 import io.vertx.kafka.client.common.Node;
@@ -51,7 +55,13 @@ import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.consumer.OffsetCommitCallback;
 import org.apache.kafka.clients.consumer.OffsetResetStrategy;
+import org.apache.kafka.common.acl.AccessControlEntryFilter;
+import org.apache.kafka.common.acl.AclOperation;
+import org.apache.kafka.common.acl.AclPermissionType;
 import org.apache.kafka.common.config.TopicConfig;
+import org.apache.kafka.common.resource.PatternType;
+import org.apache.kafka.common.resource.ResourcePatternFilter;
+import org.apache.kafka.common.resource.ResourceType;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.After;
@@ -563,5 +573,48 @@ public class AdminClientTest extends KafkaClusterTestBase {
 
     }));
   }
+
+  @Test
+  public void testAcls(TestContext ctx) {
+
+    KafkaAdminClient adminClient = KafkaAdminClient.create(this.vertx, config);
+
+    Async async = ctx.async();
+
+    AclBinding aclBinding = new AclBinding(new ResourcePattern(ResourceType.TOPIC, "mytopic", PatternType.LITERAL),
+      new AccessControlEntry("User:bob", "*", AclOperation.DESCRIBE, AclPermissionType.ALLOW));
+
+    AclBindingFilter filter = new AclBindingFilter(new ResourcePatternFilter(ResourceType.ANY, "mytopic", PatternType.LITERAL),
+      new AccessControlEntryFilter("User:bob", "*", AclOperation.ANY, AclPermissionType.ANY));
+
+    adminClient.createAcls(Collections.singletonList(aclBinding), ctx.asyncAssertSuccess(v ->{
+      adminClient.describeAcls(filter, ctx.asyncAssertSuccess(res -> {
+        List<AclBinding> test = res;
+        ctx.assertTrue(res.size() == 1);
+        adminClient.deleteAcls(Collections.singletonList(filter), ctx.asyncAssertSuccess(d -> {
+          adminClient.close();
+        }));
+      }));
+      async.complete();
+    }));
+  }
+
+//  @Test
+//  public void testDescribeAcls(TestContext ctx) {
+//
+//    KafkaAdminClient adminClient = KafkaAdminClient.create(this.vertx, config);
+//
+//    Async async = ctx.async();
+//
+//    AclBindingFilter filter = new AclBindingFilter(new ResourcePatternFilter(ResourceType.ANY, "mytopic", PatternType.LITERAL),
+//      new AccessControlEntryFilter("User:bob", "*", AclOperation.ANY, AclPermissionType.ANY));
+//
+//    adminClient.describeAcls(filter, ctx.asyncAssertSuccess(res ->{
+//      ctx.assertTrue(res.size() == 0);
+//
+//      adminClient.close();
+//      async.complete();
+//    }));
+//  }
 
 }

@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Base class for tests providing a Kafka cluster
@@ -46,7 +47,10 @@ public class KafkaClusterTestBase extends KafkaTestBase {
 
   @BeforeClass
   public static void setUp() throws IOException {
-    kafkaCluster = kafkaCluster().deleteDataPriorToStartup(true).addBrokers(1).startup();
+    Properties config = new Properties();
+    config.put("authorizer.class.name", "kafka.security.authorizer.AclAuthorizer");
+    kafkaCluster = kafkaCluster().deleteDataPriorToStartup(true).addBrokers(1).withKafkaConfiguration(config).startup();
+
   }
 
 
